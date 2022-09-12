@@ -54,10 +54,12 @@ public final class Server {
         BufferedReader buffer = new BufferedReader(
                 new InputStreamReader(in));
         StringBuilder b = new StringBuilder();
-        String line = null;
-        while ( (line = buffer.readLine()).length() > 0 ) {
+        String line = buffer.readLine();
+        while ( line != null && line.length() > 0 ) {
+            System.out.println(line);
             b.append(line);
             b.append("\n");
+            line = buffer.readLine();
         }
         return b.toString();
     }
