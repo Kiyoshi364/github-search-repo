@@ -1,19 +1,27 @@
 package com.kiyoshi364.gsr;
 
+import com.google.gson.Gson;
 import java.util.LinkedList;
 
 // Github API docs:
 // https://docs.github.com/en/rest/search#search-repositories
 public final class GitSearchResponse {
-    public final int total_count;
-    public final boolean incomplete_results;
-    public final LinkedList<Repo> items;
+    public final GSRJson response;
+    public final int pageSize;
+    public final int pageIndex;
+    public final int lastPage;
 
-    public GitSearchResponse( int total_count,
-            boolean incomplete_results, LinkedList<Repo> items) {
-        this.total_count = total_count;
-        this.incomplete_results = incomplete_results;
-        this.items = items;
+    public final class GSRJson {
+        public final int total_count;
+        public final boolean incomplete_results;
+        public final LinkedList<Repo> items;
+
+        public GSRJson( int total_count,
+                boolean incomplete_results, LinkedList<Repo> items) {
+            this.total_count = total_count;
+            this.incomplete_results = incomplete_results;
+            this.items = items;
+        }
     }
 
     public static class Repo {
@@ -68,6 +76,24 @@ public final class GitSearchResponse {
         }
     }
 
+    public GitSearchResponse(
+            GSRJson response, int per_page, int pageNumber) {
+        this.response = response;
+        this.pageSize = per_page;
+        this.pageIndex = pageNumber - 1;
+        // Rounding up
+        this.lastPage
+            = (response.total_count + per_page - 1) / per_page;
+    }
+
+    public static GitSearchResponse fromJson(
+            String json, int per_page, int pageNumber) {
+        Gson gson = new Gson();
+        return new GitSearchResponse(
+                gson.fromJson(json, GSRJson.class),
+                per_page, pageNumber);
+    }
+
     public static String prettyRepo(Repo r) {
         final StringBuilder b = new StringBuilder();
         b.append(" * Name: ");
@@ -90,12 +116,16 @@ public final class GitSearchResponse {
     public String toString() {
         final StringBuilder b = new StringBuilder();
         b.append("total count: ");
-        b.append(this.total_count);
+        b.append(this.response.total_count);
         b.append("\nincomplete results: ");
-        b.append(this.incomplete_results);
+        b.append(this.response.incomplete_results);
+        b.append("\npage: ");
+        b.append(this.pageIndex + 1);
+        b.append(" / ");
+        b.append(this.lastPage);
         b.append("\nitems:");
-        int index = 0;
-        for ( Repo r : items ) {
+        int index = this.pageIndex * this.pageSize;
+        for ( Repo r : response.items ) {
             if ( r == null ) {
                 break;
             }

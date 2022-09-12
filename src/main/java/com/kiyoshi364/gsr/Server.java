@@ -17,6 +17,7 @@ public final class Server {
         public static final int DEFAULT_PORT = 8000;
 
         public final int port;
+        public final String token;
 
         public Config(String[] args) {
             // TODO: use args for something
@@ -35,6 +36,9 @@ public final class Server {
                 }
             }
             this.port = port;
+
+            // TODO: get token
+            this.token = null;
         }
     }
 
@@ -71,18 +75,31 @@ public final class Server {
         try {
             while ( true ) {
                 Socket socket = server.accept();
-                System.out.println(">>>> New client <<<<");
+                System.out.println(">>>> New client <<<<\n");
 
                 // TODO: Note: maybe use threads?
                 String request = readInput(socket.getInputStream());
                 System.out.println(request);
 
+                // TODO: build parameters
+                GitSearchRequest req = new GitSearchRequest("crlf");
+                GitSearchResponse resp;
                 PrintWriter out =
                     new PrintWriter(socket.getOutputStream());
-                out.println(request);
-                out.flush();
+                try {
+                    resp = req.makeRequest(this.config.token);
 
-                socket.close();
+                    out.println(resp.toString());
+                } catch (Web.NotOkException e) {
+                    out.printf("Request Response: %d %s\n",
+                            e.response.rcode, e.response.rmsg);
+                    out.println("Body:");
+                    out.println(e.response.response);
+                } finally {
+                    out.flush();
+                    socket.close();
+                    System.out.println("<<<< Response Sent >>>>\n");
+                }
             }
         } catch (IOException e) {
             throw new IOException("Could not handle connection", e);

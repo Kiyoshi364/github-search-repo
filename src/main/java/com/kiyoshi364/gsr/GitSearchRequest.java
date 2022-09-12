@@ -70,6 +70,22 @@ public final class GitSearchRequest {
         this(q, Sort.STARS, Order.DESC, null, null);
     }
 
+    public int getPer_page() {
+        if ( this.per_page != null ) {
+            return this.per_page;
+        } else {
+            return 30;
+        }
+    }
+
+    public int getPage() {
+        if ( this.page != null ) {
+            return this.per_page;
+        } else {
+            return 1;
+        }
+    }
+
     private boolean append(StringBuilder b, boolean isFirst,
             String param, String value) {
         if ( value == null ) return true;
@@ -111,5 +127,19 @@ public final class GitSearchRequest {
             isFirst = append(b, isFirst,
                     "page", this.page.toString());
         return b.toString();
+    }
+
+    public GitSearchResponse makeRequest(String token)
+            throws Web.NotOkException {
+        Web.Response response
+            = Web.makeRequest(this.makeLink(), Web.Method.GET, token);
+        if ( response.rcode == 200 ) {
+            return GitSearchResponse.fromJson(
+                    response.response,
+                    this.getPer_page(),
+                    this.getPage());
+        } else {
+            throw new Web.NotOkException(response);
+        }
     }
 }

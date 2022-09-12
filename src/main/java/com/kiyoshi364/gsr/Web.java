@@ -25,6 +25,15 @@ public final class Web {
         }
     }
 
+    public static final class NotOkException extends IOException {
+        public final Response response;
+
+        public NotOkException(Response response) {
+            super("Response was not OK");
+            this.response = response;
+        }
+    }
+
     public static Response makeRequest(
             String link, Method method, String token) {
         try {
