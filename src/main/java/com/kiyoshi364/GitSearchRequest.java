@@ -1,7 +1,12 @@
 package com.kiyoshi364;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.IllegalArgumentException;
 import java.lang.StringBuilder;
+import java.net.URLEncoder;
 
+// Github API docs:
+// https://docs.github.com/en/rest/search#search-repositories
 public final class GitSearchRequest {
     public static final String BASE_URL
         = "https://api.github.com/search/repositories";
@@ -73,17 +78,26 @@ public final class GitSearchRequest {
         } else {
             b.append("&");
         }
-        b.append(param);
-        b.append("=");
-        b.append(value);
+        try {
+            b.append(URLEncoder.encode(param, "UTF-8"));
+            b.append("=");
+            b.append(URLEncoder.encode(value, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            System.out.println("Reached an unreachable Exception!");
+            System.out.println(e);
+            System.exit(1);
+        }
         return false;
     }
 
-    public String makeLink() {
+    public String makeLink() throws IllegalArgumentException {
         StringBuilder b = new StringBuilder(BASE_URL);
         boolean isFirst = true;
-        if ( this.q != null ) {
-            // TODO: check for spaces
+        if ( this.q == null ) {
+            throw new IllegalArgumentException("`q' field is null");
+        } else if ( this.q.equals("") ) {
+            throw new IllegalArgumentException("`q' field is empty");
+        } else {
             isFirst = append(b, isFirst, "q", this.q);
         }
         if ( this.sort != null )
