@@ -61,6 +61,7 @@ public final class Server {
             b.append("\n");
             line = buffer.readLine();
         }
+        System.out.println();
         return b.toString();
     }
 
@@ -91,7 +92,13 @@ public final class Server {
                 try {
                     resp = req.makeRequest(this.config.token);
 
-                    out.println(resp.toString());
+                    String resp_str = resp.toString();
+
+                    if ( resp_str.length() < 1000 ) {
+                        out.println(resp_str);
+                    } else {
+                        out.println(resp_str.substring(0, 1000));
+                    }
                 } catch (Web.NotOkException e) {
                     out.printf("Request Response: %d %s\n",
                             e.response.rcode, e.response.rmsg);
