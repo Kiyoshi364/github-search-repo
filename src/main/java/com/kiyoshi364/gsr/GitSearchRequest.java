@@ -80,7 +80,7 @@ public final class GitSearchRequest {
 
     public int getPage() {
         if ( this.page != null ) {
-            return this.per_page;
+            return this.page;
         } else {
             return 1;
         }
