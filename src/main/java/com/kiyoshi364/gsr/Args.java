@@ -12,9 +12,18 @@ public final class Args {
             String opt = options[i];
             if ( arg.startsWith(opt) ) {
                 int opt_len = opt.length();
-                if ( arg.length() > opt_len
-                        && arg.charAt(opt_len) == '=' ) {
-                    String matched = arg.substring(opt.length()+1);
+                int arg_len = arg.length();
+                boolean withValue = arg_len > opt_len
+                        && arg.charAt(opt_len) == '=';
+                boolean withoutValue = arg_len == opt_len;
+
+                if ( withValue || withoutValue ) {
+                    String matched = null;
+                    if ( withValue ) {
+                        matched = arg.substring(opt_len+1);
+                    } else {
+                        matched = null;
+                    }
                     if ( map.containsKey(i) ) {
                         System.out.println(
                                 "[WARNING] overwriting " + opt
