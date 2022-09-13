@@ -7,9 +7,24 @@ import java.util.Iterator;
 
 public final class Cli {
 
-    public static final String[] options = {
-        "token", "q", "sort", "order", "per-page", "page"
-     };
+    private static enum Options {
+        TOKEN(0, "token"), Q(1, "q"), SORT(2, "sort"),
+        ORDER(3, "order"), PER_PAGE(4, "per-page"), PAGE(5, "page"),
+        JSON(6, "json");
+
+        public final int val;
+        public final String str;
+        private Options(int val, String str) {
+            this.val = val;
+            this.str = str;
+        }
+    }
+
+    private static final String[] options = {
+        Options.TOKEN.str, Options.Q.str, Options.SORT.str,
+        Options.ORDER.str, Options.PER_PAGE.str, Options.PAGE.str,
+        Options.JSON.str,
+    };
 
     public static void main(String[] args) {
         if ( Args.hasHelp(args) ) {
@@ -25,20 +40,20 @@ public final class Cli {
         Integer per_page = null;
         Integer page = null;
 
+        boolean outputJson = false;
+
         final Iterator<Map.Entry<Integer, String>> it
             = parsed.entrySet().iterator();
         while ( it.hasNext() ) {
             final Map.Entry<Integer, String> e = it.next();
             final int key = e.getKey();
             final String arg = e.getValue();
-            switch ( key ) {
-                case 0:
-                    token = arg;
-                    break;
-                case 1:
-                    q = arg;
-                    break;
-                case 2:
+            if ( key == Options.TOKEN.val ) {
+                token = arg;
+            } else if ( key == Options.Q.val ) {
+                q = arg;
+            } else if ( key == Options.SORT.val ) {
+                if ( arg != null ) {
                     if ( arg.equalsIgnoreCase("stars") ) {
                         sort = GitSearchRequest.Sort.STARS;
                     } else if ( arg.equalsIgnoreCase("forks") ) {
@@ -57,8 +72,11 @@ public final class Cli {
                                 + " unable to parse order"
                                 + " from arg: `" + arg + "'");
                     }
-                    break;
-                case 3:
+                } else {
+                    sort = null;
+                }
+            } else if ( key == Options.ORDER.val ) {
+                if ( arg != null ) {
                     if ( arg.equalsIgnoreCase("desc") ) {
                         order = GitSearchRequest.Order.DESC;
                     } else if ( arg.equalsIgnoreCase("asc") ) {
@@ -70,8 +88,11 @@ public final class Cli {
                                 + " unable to parse order"
                                 + " from arg: `" + arg + "'");
                     }
-                    break;
-                case 4:
+                } else {
+                    order = null;
+                }
+            } else if ( key == Options.PER_PAGE.val ) {
+                if ( arg != null ) {
                     try {
                         per_page = Integer.parseUnsignedInt(arg);
                     } catch (NumberFormatException ex) {
@@ -79,8 +100,9 @@ public final class Cli {
                                 + " unable to parse per_page"
                                 + " from arg: `" + arg + "'");
                     }
-                    break;
-                case 5:
+                }
+            } else if ( key == Options.PAGE.val ) {
+                if ( arg != null ) {
                     try {
                         page = Integer.parseUnsignedInt(arg);
                     } catch (NumberFormatException ex) {
@@ -88,7 +110,14 @@ public final class Cli {
                                 + " unable to parse page"
                                 + " from arg: `" + arg + "'");
                     }
-                    break;
+                }
+            } else if ( key == Options.JSON.val ) {
+                outputJson = true;
+                if ( arg != null ) {
+                    System.out.println("WARNING:"
+                            + " turning on json output,"
+                            + " json's arg was: `" + arg + "'");
+                }
             }
         }
 
@@ -101,9 +130,18 @@ public final class Cli {
         GitSearchRequest req = new GitSearchRequest(
                 q, sort, order, per_page, page);
         try {
-            GitSearchResponse resp
-                = req.makeRequest(token);
-            System.out.println(resp.toString());
+            if ( outputJson ) {
+                final String link = req.makeLink();
+                Web.Response wresp
+                    = Web.makeRequest(link, Web.Method.GET, token);
+                if ( wresp.rcode == 200 ) {
+                    System.out.println(wresp.response);
+                } else throw new Web.NotOkException(wresp);
+            } else {
+                GitSearchResponse resp
+                    = req.makeRequest(token);
+                System.out.println(resp.toString());
+            }
         } catch (Web.NotOkException e) {
             System.out.printf("Request Response: %d %s\n",
                     e.response.rcode, e.response.rmsg);
