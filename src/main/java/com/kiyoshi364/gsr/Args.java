@@ -40,4 +40,25 @@ public final class Args {
         }
         return map;
     }
+
+    private static String[] helps = {
+        "help", "/?", "-h", "--help",
+    };
+    private static boolean isHelp(String arg) {
+        for ( String h : helps ) {
+            if ( h.equals(arg) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasHelp(String[] args) {
+        for ( String arg : args ) {
+            if ( isHelp(arg) ) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

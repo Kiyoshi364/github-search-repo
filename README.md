@@ -43,11 +43,15 @@ java -jar target/github-search-repo-1.0-jar-with-dependencies.jar
 # CLI
 
 By default, the program runs the server,
-but if the first argument is "cli" (case sensitive)
+but if the first argument is "cli"
 it will run in the CLI mode.
 
 Arguments are passed in the form `key=value`,
-the `key` is case sensitive and
-the `value` is case insensitive.
+or only `key` when there is no need for a value.
+
+Consider running with `help` flag:
+```console
+java -jar target/github-search-repo-1.0-jar-with-dependencies.jar cli help
+```
 
 > **Note:** `q` is _required_
