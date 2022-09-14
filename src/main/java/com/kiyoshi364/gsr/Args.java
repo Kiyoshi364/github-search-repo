@@ -1,7 +1,7 @@
 package com.kiyoshi364.gsr;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public final class Args {
     // TODO: support -- whatever

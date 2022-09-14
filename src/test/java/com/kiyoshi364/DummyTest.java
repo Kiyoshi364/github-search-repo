@@ -1,4 +1,4 @@
-package com.kiyoshi364;
+package com.kiyoshi364.gsr;
 
 import static org.junit.Assert.assertTrue;
 
