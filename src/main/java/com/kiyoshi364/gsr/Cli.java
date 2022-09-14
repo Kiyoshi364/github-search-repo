@@ -31,7 +31,8 @@ public final class Cli {
             printHelp();
             return;
         }
-        Map parsed = Args.parse(args, options);
+        final Map<Integer, String> parsed
+            = Args.parse(args, options);
 
         String token = null;
         String q = null;
@@ -42,10 +43,7 @@ public final class Cli {
 
         boolean outputJson = false;
 
-        final Iterator<Map.Entry<Integer, String>> it
-            = parsed.entrySet().iterator();
-        while ( it.hasNext() ) {
-            final Map.Entry<Integer, String> e = it.next();
+        for ( Map.Entry<Integer, String> e : parsed.entrySet() ) {
             final int key = e.getKey();
             final String arg = e.getValue();
             if ( key == Options.TOKEN.val ) {
