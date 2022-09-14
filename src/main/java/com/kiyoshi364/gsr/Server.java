@@ -50,7 +50,16 @@ public final class Server {
         this(new Config(args));
     }
 
-    public static String readInput(InputStream in) throws IOException {
+    public static void dropInput(Socket s, InputStream in)
+            throws IOException {
+        while ( s.isInputShutdown() ) {
+            long toskip = in.available();
+            in.skip(toskip);
+        }
+    }
+
+    public static String readInput(InputStream in)
+            throws IOException {
         BufferedReader buffer = new BufferedReader(
                 new InputStreamReader(in));
         StringBuilder b = new StringBuilder();
@@ -81,7 +90,8 @@ public final class Server {
                 System.out.println(">>>> New client <<<<\n");
 
                 // TODO: Note: maybe use threads?
-                String request = readInput(socket.getInputStream());
+                InputStream in = socket.getInputStream();
+                String request = readInput(in);
                 System.out.println(request);
 
                 // TODO: build parameters
@@ -99,13 +109,14 @@ public final class Server {
                     } else {
                         out.println(resp_str.substring(0, 1000));
                     }
+                    out.flush();
+                    dropInput(socket, in);
                 } catch (Web.NotOkException e) {
                     out.printf("Request Response: %d %s\n",
                             e.response.rcode, e.response.rmsg);
                     out.println("Body:");
                     out.println(e.response.response);
                 } finally {
-                    out.flush();
                     socket.close();
                     System.out.println("<<<< Response Sent >>>>\n");
                 }
