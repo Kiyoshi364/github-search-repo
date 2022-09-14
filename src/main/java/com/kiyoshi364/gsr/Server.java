@@ -109,14 +109,15 @@ public final class Server {
                     } else {
                         out.println(resp_str.substring(0, 1000));
                     }
-                    out.flush();
-                    dropInput(socket, in);
                 } catch (Web.NotOkException e) {
                     out.printf("Request Response: %d %s\n",
                             e.response.rcode, e.response.rmsg);
                     out.println("Body:");
                     out.println(e.response.response);
                 } finally {
+                    out.flush();
+                    socket.shutdownOutput();
+                    dropInput(socket, in);
                     socket.close();
                     System.out.println("<<<< Response Sent >>>>\n");
                 }
