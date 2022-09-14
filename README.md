@@ -40,6 +40,12 @@ java -jar target/github-search-repo-1.0-jar-with-dependencies.jar
     heroku local
     ```
 
+# Server
+
+It's unfinished the response is static
+to a search to "crlf"
+and truncated to 999 caracters.
+
 # CLI
 
 By default, the program runs the server,
