@@ -132,7 +132,7 @@ public final class GitSearchRequest {
     public GitSearchResponse makeRequest(String token)
             throws Web.NotOkException {
         Web.Response response
-            = Web.makeRequest(this.makeLink(), Web.Method.GET, token);
+            = Web.makeRequest(this.makeLink(), token);
         if ( response.rcode == 200 ) {
             return GitSearchResponse.fromJson(
                     response.response,

@@ -133,7 +133,7 @@ public final class Cli {
             if ( outputJson ) {
                 final String link = req.makeLink();
                 Web.Response wresp
-                    = Web.makeRequest(link, Web.Method.GET, token);
+                    = Web.makeRequest(link, token);
                 if ( wresp.rcode == 200 ) {
                     System.out.println(wresp.response);
                 } else throw new Web.NotOkException(wresp);

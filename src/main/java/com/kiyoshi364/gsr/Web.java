@@ -10,10 +10,6 @@ import java.net.MalformedURLException;
 import javax.net.ssl.HttpsURLConnection;
 
 public final class Web {
-    public enum Method {
-        GET, POST, HEAD, OPTIONS, PUT, DELETE, TRACE;
-    }
-
     public static final class Response {
         public final int rcode;
         public final String rmsg;
@@ -34,13 +30,12 @@ public final class Web {
         }
     }
 
-    public static Response makeRequest(
-            String link, Method method, String token) {
+    public static Response makeRequest(String link, String token) {
         try {
             URL url = new URL(link);
             HttpsURLConnection conn
                 = (HttpsURLConnection) url.openConnection();
-            conn.setRequestMethod(method.toString());
+            conn.setRequestMethod("GET");
             conn.setRequestProperty(
                     "Accept", "application/vnd.github+json");
             if ( token != null ) {
@@ -82,11 +77,10 @@ public final class Web {
         return null;
     }
 
-    public static Response fakeRequest(
-            String link, Method method, String token) {
+    public static Response fakeRequest(String link, String token) {
         StringBuilder b = new StringBuilder();
         b.append("{");
-        b.append("\n  \"total_count\": 698,");
+        b.append("\n  \"total_count\": 1,");
         b.append("\n  \"incomplete_results\": false,");
         b.append("\n  \"items\": [");
         b.append("\n    {");
