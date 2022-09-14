@@ -35,23 +35,8 @@ public final class Main {
         o.println("Possible args:");
         o.println("  token=<string>");
         o.println("        <string> should be a valid Gitub token.");
-        o.println("  q=<string>");
-        o.println("        <string> to use in the repo search.");
-        o.println("        This argument is required!");
-        o.println("  sort="
-                + "[stars|forks|help-wanted-issues|updated|best|]");
-        o.println("        How to sort the results.");
-        o.println("        Note that \"\" is suported and"
-                + " is the same as \"best\".");
-        o.println("        The default is \"stars\".");
-        o.println("  order=[asc|desc]");
-        o.println("        The default is \"desc\".");
-        o.println("  per-page=<uint>");
-        o.println("        Number of results in a page.");
-        o.println("        (API's max number is 100)");
-        o.println("  page=<uint>");
-        o.println("        Page number.");
-        o.println("        (API's default page is 1)");
+        o.println("  port=<uint>");
+        o.println("        which port to use");
     }
 
     public static void main(String[] args) {

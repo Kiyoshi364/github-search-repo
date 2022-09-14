@@ -1,5 +1,6 @@
 package com.kiyoshi364.gsr;
 
+import java.util.Map;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,21 @@ import java.net.Socket;
 public final class Server {
     private final Config config;
 
+    private static enum Options {
+        TOKEN(0, "token"), PORT(1, "port");
+
+        public final int val;
+        public final String str;
+        private Options(int val, String str) {
+            this.val = val;
+            this.str = str;
+        }
+    }
+
+    private static final String[] options = {
+        Options.TOKEN.str, Options.PORT.str,
+    };
+
     public static final class Config {
         public static final int DEFAULT_PORT = 8000;
 
@@ -20,8 +36,11 @@ public final class Server {
         public final String token;
 
         public Config(String[] args) {
-            // TODO: use args for something
-            String port_str = System.getenv("PORT");
+            final Map<Integer, String> parsed
+                = Args.parse(args, options);
+
+            final String port_str = parsed.getOrDefault(
+                        Options.PORT.val, System.getenv("PORT"));
             int port = DEFAULT_PORT;
             if ( port_str != null ) {
                 try {
@@ -37,8 +56,9 @@ public final class Server {
             }
             this.port = port;
 
-            // TODO: get token
-            this.token = null;
+            String token_str = System.getenv("TOKEN");
+            this.token = parsed.getOrDefault(
+                        Options.TOKEN.val, System.getenv("TOKEN"));
         }
     }
 
